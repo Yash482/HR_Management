@@ -24,6 +24,8 @@ exports.postAddEmployee = async (req, res, next) => {
   const team = req.body.team;
   const yearsWorked = 0;
   const hrId = req.params.id;
+  const allowances = req.body.allowances;
+  const deduction = req.body.deduction;
 
   
   
@@ -40,7 +42,9 @@ exports.postAddEmployee = async (req, res, next) => {
       role: role,
       team : team,
       yearsWorked : yearsWorked,
-      hr : hrId
+      hr : hrId,
+      allowances : allowances,
+      deduction : deduction
     });
     const result = await employee.save();
     res.status(201).json({ message: 'Employee added!', EmployeeId: result._id });
@@ -188,6 +192,48 @@ exports.getEmployee = async (req, res, next) => {
     }
   };
   
+  exports.postLeaveReqStatus = async (req, res, next) => {
+    try {
+      const leave = await Leave.findById(req.params.leaveId);
+      if (!leave) {
+        const error = new Error('Request not found.');
+        error.statusCode = 404;
+        throw error;
+      }
+      leave.status = req.params.status;
+  
+      await leave.save();
+      res.status(200).json({ message: 'Request updated.' });
+    } catch (err) {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    }
+      
+  };
+
+  exports.postLoanReqStatus = async (req, res, next) => {
+    try {
+      const loan = await Loan.findById(req.params.loanId);
+      if (!loan) {
+        const error = new Error('Request not found.');
+        error.statusCode = 404;
+        throw error;
+      }
+      loan.status = req.params.status;
+  
+      await loan.save();
+      res.status(200).json({ message: 'Request updated.' });
+    } catch (err) {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    }
+      
+  };
+    
   
 
 // exports.getUserStatus = async (req, res, next) => {
@@ -207,23 +253,31 @@ exports.getEmployee = async (req, res, next) => {
 //   }
 // };
 
-// exports.updateUserStatus = async (req, res, next) => {
-//   const newStatus = req.body.status;
-//   try {
-//     const user = await User.findById(req.userId);
-//     if (!user) {
-//       const error = new Error('User not found.');
-//       error.statusCode = 404;
-//       throw error;
-//     }
-//     user.status = newStatus;
-//     await user.save();
-//     res.status(200).json({ message: 'User updated.' });
-//   } catch (err) {
-//     if (!err.statusCode) {
-//       err.statusCode = 500;
-//     }
-//     next(err);
-//   }
-// };
+exports.updateEmployeeDetails = async (req, res, next) => {
+  const newSalary = req.body.salary; 
+  const newTeam = req.body.team; 
+  const newAllowances = req.body.allowances; 
+  const newDeduction = req.body.deduction; 
+
+  try {
+    const employee = await Employee.findById(req.params.empId);
+    if (!employee) {
+      const error = new Error('Employee not found.');
+      error.statusCode = 404;
+      throw error;
+    }
+    employee.salary = newSalary;
+    employee.team = newTeam;
+    employee.allowances = newAllowances;
+    employee.deduction = newDeduction;
+
+    await employee.save();
+    res.status(200).json({ message: 'employee updated.' });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
 
