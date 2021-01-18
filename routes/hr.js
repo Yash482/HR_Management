@@ -37,6 +37,11 @@ router.get('/:hrId/bonus-reqs', isAuth, hrController.getLoanReq);
 
 router.get('/:hrId/employees', isAuth, hrController.getEmployees);
 router.get('/:hrId/employees/:empId', isAuth, hrController.getEmployee);
+router.put('/:hrId/employees/:empId/edit', isAuth, hrController.updateEmployeeDetails);
+
+router.post('/:hrId/leave-reqs/:leaveId/:status', isAuth, hrController.postLeaveReqStatus);
+router.post('/:hrId/loan-reqs/:loanId/:status', isAuth, hrController.postLoanReqStatus);
+router.post('/:hrId/bonus-reqs/:bonusId/:status', isAuth, hrController.postLoanReqStatus);
 
 
 // router.get('/status', isAuth, hrController.getUserStatus);
