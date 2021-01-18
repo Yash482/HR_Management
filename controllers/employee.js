@@ -8,8 +8,8 @@ const jwt = require('jsonwebtoken');
 const io = require('../socket');
 const Employee = require('../models/employee');
 const Hr = require('../models/hr');
-const Leave = require('../models/leaveReq')
-const Loan = require('../models/loanReq')
+const Leave = require('../models/leaveReq');
+const Loan = require('../models/loanReq');
 
 
 exports.login = async (req, res, next) => {
