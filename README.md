@@ -13,4 +13,7 @@
  GET  Req    /hr/:hrId/loan-reqs --> To see all the loan requests which are neither approved or rejected<br />
  POST Req    /employee/:empId/create-bonus-req --> To request for bonus to your HR<br />
  GET  Req    /hr/:hrId/bonus-reqs --> To see all the bonus requests which are neither approved or rejected<br />
-
+PUT Req      /hr/:hrId/employees/:empId/edit --> To update employee details like team, salary etc.<br/>
+ POST  Req    /hr/:hrId/loan-reqs/:loanId/:status --> Respond to loan request<br />
+ POST  Req    /hr/:hrId/leave-reqs/:leaveId/:status --> Respond to leave request<br />
+ POST  Req    /hr/:hrId/bonus-reqs/:bonusId/:status --> Respond to bonus request<br />
