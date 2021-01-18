@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const leaveSchema = new Schema({
   currDate : {
-    type: Date.now(),
+    type: Date,
     required: true
   },
   startDate : {

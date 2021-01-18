@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const loanSchema = new Schema({
   currDate : {
-    type: Date.now(),
+    type: Date,
     required: true
   },
   amount : {
