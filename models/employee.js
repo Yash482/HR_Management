@@ -31,6 +31,18 @@ const employeeSchema = new Schema(
       type: String,
       required: true
     },
+    allowances : [
+      {
+        title : {type: String},
+        time : {type: String}
+      }
+    ],
+    deduction : [
+      {
+        title : {type: String},
+        time : {type: String}
+      }
+    ],
     hr: {
       type: Schema.Types.ObjectId,
       ref: 'HrManager',
