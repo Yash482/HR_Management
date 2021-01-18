@@ -35,6 +35,21 @@ const app = express();
 //   }
 // };
 
+const today = new Date();
+const month = today.getUTCMonth()+1;
+const day = today.getUTCDate();
+const year = today.getUTCFullYear();
+const hour = today.getHours();
+const min = today.getMinutes();
+const sec = today.getSeconds();
+console.log(today.toString());
+console.log(month);
+console.log(day);
+console.log(year);
+console.log(hour);
+console.log(min);
+console.log(sec);
+
 // app.use(bodyParser.urlencoded()); // x-www-form-urlencoded <form>
 app.use(bodyParser.json()); // application/json
 // app.use(
