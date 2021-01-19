@@ -6,6 +6,7 @@ const Employee = require('../models/employee');
 const Hr = require('../models/hr');
 const Leave = require('../models/leaveReq');
 const Loan = require('../models/loanReq');
+const Attendance = require('../models/attendance');
 
 
 exports.postAddEmployee = async (req, res, next) => {
@@ -19,18 +20,13 @@ exports.postAddEmployee = async (req, res, next) => {
   const email = req.body.email;
   const name = req.body.name;
   const password = req.body.password;
-  const salary = req.body.email;
+  const salary = req.body.salary;
   const role = req.body.role;
   const team = req.body.team;
   const yearsWorked = 0;
-  const hrId = req.params.id;
-  const allowances = req.body.allowances;
-  const deduction = req.body.deduction;
+  const hrId = req.params.hrId;
 
-  
-  
   try {
-    await Hr.addEmployee(hrId); 
     
     const hashedPw = await bcrypt.hash(password, 12);
 
@@ -42,11 +38,15 @@ exports.postAddEmployee = async (req, res, next) => {
       role: role,
       team : team,
       yearsWorked : yearsWorked,
-      hr : hrId,
-      allowances : allowances,
-      deduction : deduction
+      hr : hrId
+      // allowances : allowances,
+      // deduction : deduction
     });
+    console.log(employee);
+    const currHr = await Hr.findById(hrId)
+    currHr.addEmployee(employee._id);
     const result = await employee.save();
+    console.log("employee saved")
     res.status(201).json({ message: 'Employee added!', EmployeeId: result._id });
   } catch (err) {
     if (!err.statusCode) {
@@ -56,19 +56,53 @@ exports.postAddEmployee = async (req, res, next) => {
   }
 };
 
+exports.addAllowance = async (req, res, next) => {
+  const title = req.body.title;
+  const time = req.body.time;
+  try {
+    const emp = await Employee.findById(req.params.empId);
+    await emp.addAllowance({title : title, time: time})
+    res.status(201).json({ message: 'allowance added!'});
+
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+}
+
+exports.addDeduction = async (req, res, next) => {
+  const title = req.body.title;
+  const time = req.body.time;
+  try {
+    const emp = await Employee.findById(req.params.empId);
+    await emp.addDeduction({title : title, time: time})
+    res.status(201).json({ message: 'deduction added!'});
+
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+}
+
 exports.login = async (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
+  console.log(email);
   let loadedHr;
   try {
     const hr = await Hr.findOne({ email: email });
+    console.log(hr);
     if (!hr) {
       const error = new Error('wrong email id');
       error.statusCode = 401;
       throw error;
     }
     loadedHr = hr;
-    const isEqual = await bcrypt.compare(password, hr.password);
+    const isEqual = password== hr.password;
     if (!isEqual) {
       const error = new Error('Wrong password!');
       error.statusCode = 401;
@@ -77,12 +111,12 @@ exports.login = async (req, res, next) => {
     const token = jwt.sign(
       {
         email: loadedHr.email,
-        hrId: loadedUser._id.toString()
+        hrId: loadedHr._id.toString()
       },
       'somesupersecretsecret',
       { expiresIn: '1h' }
     );
-    res.status(200).json({ token: token, hrId: loadedHr._id.toString() });
+    res.status(200).json({ token: token, hr: loadedHr });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -90,6 +124,83 @@ exports.login = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.markAbsent = async (req, res, next) => {
+    
+    const today = new Date();
+    const month = today.getUTCMonth()+1;
+    const day = today.getUTCDate();
+    const year = today.getUTCFullYear();
+    // const hour = today.getHours();
+    // const min = today.getMinutes();
+    // const sec = today.getSeconds();
+    try {
+      const Hremployees = await Employee.find({hr : req.params.hrId});
+      const updatedEmployees = Hremployees.map(employee => {
+        let empOb = {
+              empId : employee._id,
+              empName : employee.name,
+              present : 0,
+              hour : -1,
+              min : -1,
+            }
+        return empOb;
+      })
+
+
+      const todayAttendance = new Attendance({
+        day: day,
+        month: month,
+        year: year,
+        employees : updatedEmployees,
+        hr: req.params.hrId
+      });
+      const result = await todayAttendance.save();
+      res.status(201).json({ message: 'Attendance form open'});
+    } catch (err) {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    }
+}
+
+exports.getSpecificAttendance = async (req, res, next) => {
+  try {
+    const attendance = await Attendance.findOne({day : req.body.day, month : req.body.month, year : req.body.year, hr: req.params.hrId});
+
+    res.status(201).json({ message: 'Attendance for given day', attendance : attendance});
+
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+}
+
+exports.getAttendance = async (req, res, next) => {
+  try {
+    
+    const AttendanceArr = await Attendance.find({hr : req.params.hrId, year: req.body.year, month : req.body.month});
+    let employeeAttendance = AttendanceArr.map(empAtt => {
+        let present, hour, min;
+        empAtt.employees.array.forEach(emp => {
+            if(emp.empId == req.params.empId){
+                present = emp.present; hour= emp.hour; min = emp.min; 
+            }
+        });
+        return {day : empAtt.day, present : present, hour: hour, min : min}
+    })
+    
+    res.status(201).json({ message: 'Attendance for given month', attendance : employeeAttendance});
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+}
 
 
 exports.getLeaveReq = async (req, res, next) => {
@@ -203,7 +314,7 @@ exports.getEmployee = async (req, res, next) => {
       leave.status = req.params.status;
   
       await leave.save();
-      res.status(200).json({ message: 'Request updated.' });
+      res.status(200).json({ message: 'Request updated.' , leave : leave});
     } catch (err) {
       if (!err.statusCode) {
         err.statusCode = 500;
@@ -215,7 +326,8 @@ exports.getEmployee = async (req, res, next) => {
 
   exports.postLoanReqStatus = async (req, res, next) => {
     try {
-      const loan = await Loan.findById(req.params.loanId);
+      let loanId = req.params.loanId ? req.params.loanId : req.params.bonusId;
+      const loan = await Loan.findById(loanId);
       if (!loan) {
         const error = new Error('Request not found.');
         error.statusCode = 404;
@@ -224,7 +336,7 @@ exports.getEmployee = async (req, res, next) => {
       loan.status = req.params.status;
   
       await loan.save();
-      res.status(200).json({ message: 'Request updated.' });
+      res.status(200).json({ message: 'Request updated.', loan : loan });
     } catch (err) {
       if (!err.statusCode) {
         err.statusCode = 500;
@@ -256,8 +368,6 @@ exports.getEmployee = async (req, res, next) => {
 exports.updateEmployeeDetails = async (req, res, next) => {
   const newSalary = req.body.salary; 
   const newTeam = req.body.team; 
-  const newAllowances = req.body.allowances; 
-  const newDeduction = req.body.deduction; 
 
   try {
     const employee = await Employee.findById(req.params.empId);
@@ -268,11 +378,9 @@ exports.updateEmployeeDetails = async (req, res, next) => {
     }
     employee.salary = newSalary;
     employee.team = newTeam;
-    employee.allowances = newAllowances;
-    employee.deduction = newDeduction;
 
     await employee.save();
-    res.status(200).json({ message: 'employee updated.' });
+    res.status(200).json({ message: 'employee updated.' , employee : employee});
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
