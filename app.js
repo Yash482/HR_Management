@@ -7,6 +7,9 @@ const multer = require('multer');
 
 const employeeRoutes = require('./routes/employee');
 const hrRoutes = require('./routes/hr');
+const { request } = require('http');
+const Hr = require('./models/hr');
+
 
 
 mongoose.connect("mongodb://localhost/hr-db", {useNewUrlParser: true, useUnifiedTopology: true});
@@ -14,41 +17,6 @@ mongoose.connect("mongodb://localhost/hr-db", {useNewUrlParser: true, useUnified
 
 const app = express();
 
-// const fileStorage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, 'images');
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, new Date().toISOString() + '-' + file.originalname);
-//   }
-// });
-
-// const fileFilter = (req, file, cb) => {
-//   if (
-//     file.mimetype === 'image/png' ||
-//     file.mimetype === 'image/jpg' ||
-//     file.mimetype === 'image/jpeg'
-//   ) {
-//     cb(null, true);
-//   } else {
-//     cb(null, false);
-//   }
-// };
-
-const today = new Date();
-const month = today.getUTCMonth()+1;
-const day = today.getUTCDate();
-const year = today.getUTCFullYear();
-const hour = today.getHours();
-const min = today.getMinutes();
-const sec = today.getSeconds();
-console.log(today.toString());
-console.log(month);
-console.log(day);
-console.log(year);
-console.log(hour);
-console.log(min);
-console.log(sec);
 
 // app.use(bodyParser.urlencoded()); // x-www-form-urlencoded <form>
 app.use(bodyParser.json()); // application/json
@@ -56,6 +24,14 @@ app.use(bodyParser.json()); // application/json
 //   multer({ storage: fileStorage, fileFilter: fileFilter }).single('image')
 // );
 //app.use('/images', express.static(path.join(__dirname, 'images')));
+
+// const hr = new Hr({
+//   name : "Ayushi Singh",
+//   email: "ayushinasha@gmail.com",
+//   password: "12345678"
+// })
+
+//  hr.save();
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
