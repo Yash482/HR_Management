@@ -33,14 +33,14 @@ const employeeSchema = new Schema(
     },
     allowances : [
       {
-        title : {type: String},
-        time : {type: String}
+        title : String,
+        time : String
       }
     ],
     deduction : [
       {
-        title : {type: String},
-        time : {type: String}
+        title : String,
+        time : String
       }
     ],
     hr: {
@@ -51,5 +51,28 @@ const employeeSchema = new Schema(
   },
   { timestamps: true }
 );
+
+
+employeeSchema.methods.addAllowance = function(allowance) {
+  
+  const updatedAllowances = [...this.allowances];
+
+    updatedAllowances.push(allowance);
+ 
+  this.allowances = updatedAllowances;
+  return this.save();
+};
+
+employeeSchema.methods.addDeduction = function(deduction) {
+  
+  const updatedDeduction = [...this.deduction];
+
+    updatedDeduction.push(deduction);
+ 
+  this.deduction = updatedDeduction;
+  return this.save();
+};
+
+
 
 module.exports = mongoose.model('Employee', employeeSchema);
