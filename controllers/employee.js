@@ -10,6 +10,7 @@ const Employee = require('../models/employee');
 const Hr = require('../models/hr');
 const Leave = require('../models/leaveReq');
 const Loan = require('../models/loanReq');
+const Attendance = require('../models/attendance');
 
 
 exports.login = async (req, res, next) => {
@@ -38,7 +39,7 @@ exports.login = async (req, res, next) => {
       'somesupersecretsecret',
       { expiresIn: '1h' }
     );
-    res.status(200).json({ token: token, employeeId: loadedEmployee._id.toString() });
+    res.status(200).json({ token: token, employee: loadedEmployee });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -48,30 +49,6 @@ exports.login = async (req, res, next) => {
 };
 
 
-// exports.getPosts = async (req, res, next) => {
-//   const currentPage = req.query.page || 1;
-//   const perPage = 2;
-//   try {
-//     const totalItems = await Post.find().countDocuments();
-//     const posts = await Post.find()
-//       .populate('creator')
-//       .sort({ createdAt: -1 })
-//       .skip((currentPage - 1) * perPage)
-//       .limit(perPage);
-
-//     res.status(200).json({
-//       message: 'Fetched posts successfully.',
-//       posts: posts,
-//       totalItems: totalItems
-//     });
-//   } catch (err) {
-//     if (!err.statusCode) {
-//       err.statusCode = 500;
-//     }
-//     next(err);
-//   }
-// };
-
 exports.createLeaveReq = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -79,15 +56,16 @@ exports.createLeaveReq = async (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
-  // if (!req.file) {
-  //   const error = new Error('No image provided.');
-  //   error.statusCode = 422;
-  //   throw error;
-  // }
-  //const imageUrl = req.file.path;
+  const today = new Date();
+  const month = today.getUTCMonth()+1;
+  const day = today.getUTCDate();
+  const year = today.getUTCFullYear();
+
   const startDate = req.body.startDate;
   const endDate = req.body.endDate;
   const status = 0;
+  const reason = req.body.reason;
+  const currDate = day + "/" + month + "/" + year;
   const employee = req.params.empId;
   let hr;
   
@@ -99,6 +77,8 @@ exports.createLeaveReq = async (req, res, next) => {
       endDate: endDate,
       status: status,
       employee: employee,
+      currDate : currDate,
+      reason : reason,
       hr : hr
     });
     await leaveReq.save();
@@ -122,21 +102,27 @@ exports.createLeaveReq = async (req, res, next) => {
 
 exports.createLoanReq = async (req, res, next) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const error = new Error('Validation failed, entered data is incorrect.');
-    error.statusCode = 422;
-    throw error;
-  }
+  // if (!errors.isEmpty()) {
+  //   const error = new Error('Validation failed, entered data is incorrect.');
+  //   error.statusCode = 422;
+  //   throw error;
+  // }
   // if (!req.file) {
   //   const error = new Error('No image provided.');
   //   error.statusCode = 422;
   //   throw error;
   // }
   //const imageUrl = req.file.path;
+  const today = new Date();
+  const month = today.getUTCMonth()+1;
+  const day = today.getUTCDate();
+  const year = today.getUTCFullYear();
+
+  const currDate = day + "/" + month + "/" + year;
   const amount = req.body.amount;
   const status = 0;
   const employee = req.params.empId;
-  isLoan : req.body.loan ? true : false;
+  let isLoan = req.body.isLoan ? true : false;
   let hr;
   
   try {
@@ -147,6 +133,7 @@ exports.createLoanReq = async (req, res, next) => {
       amount : amount,
       employee: employee,
       isLoan: isLoan,
+      currDate : currDate,
       hr : hr
     });
     await loanReq.save();
@@ -167,64 +154,39 @@ exports.createLoanReq = async (req, res, next) => {
 };
 
 
-exports.getPost = async (req, res, next) => {
-  const postId = req.params.postId;
-  const post = await Post.findById(postId);
+exports.markAttendance = async (req, res, next) => {
   try {
-    if (!post) {
-      const error = new Error('Could not find post.');
-      error.statusCode = 404;
-      throw error;
-    }
-    res.status(200).json({ message: 'Post fetched.', post: post });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-};
+    const employee = await Employee.findById(req.params.empId);
 
-exports.updatePost = async (req, res, next) => {
-  const postId = req.params.postId;
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const error = new Error('Validation failed, entered data is incorrect.');
-    error.statusCode = 422;
-    throw error;
-  }
-  const title = req.body.title;
-  const content = req.body.content;
-  let imageUrl = req.body.image;
-  if (req.file) {
-    imageUrl = req.file.path;
-  }
-  if (!imageUrl) {
-    const error = new Error('No file picked.');
-    error.statusCode = 422;
-    throw error;
-  }
-  try {
-    const post = await Post.findById(postId).populate('creator');
-    if (!post) {
-      const error = new Error('Could not find post.');
+    if (!employee) {
+      const error = new Error('Could not find employee.');
       error.statusCode = 404;
       throw error;
     }
-    if (post.creator._id.toString() !== req.userId) {
-      const error = new Error('Not authorized!');
-      error.statusCode = 403;
-      throw error;
-    }
-    if (imageUrl !== post.imageUrl) {
-      clearImage(post.imageUrl);
-    }
-    post.title = title;
-    post.imageUrl = imageUrl;
-    post.content = content;
-    const result = await post.save();
-    io.getIO().emit('posts', { action: 'update', post: result });
-    res.status(200).json({ message: 'Post updated!', post: result });
+    const hrId = employee.hr ;
+    const today = new Date();
+    const month = today.getUTCMonth()+1;
+    const day = today.getUTCDate();
+    const year = today.getUTCFullYear();
+
+    const todayAttendance = Attendance.findOne({day : day, month: month, year: year, hr: hrId});
+    console.log(todayAttendance);
+     let hrEmployees = [...todayAttendance.employees];
+     
+    hrEmployees.array.forEach(employee => {
+      if(employee.empId == req.params.empId){
+        const today = new Date();
+        const hour = today.getHours();
+        const min = today.getMinutes();
+        employee.present = 1;
+        employee.hour = hour;
+        employee.min = min;
+      }
+    });
+    todayAttendance.employees = hrEmployees;
+    await todayAttendance.save();
+
+    res.status(200).json({ message: 'Attendance marked.' });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
