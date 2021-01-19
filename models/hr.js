@@ -32,4 +32,5 @@ hrSchema.methods.addEmployee = function(empId) {
 };
 
 
+
 module.exports = mongoose.model('HrManager', hrSchema);
