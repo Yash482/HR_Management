@@ -3,16 +3,20 @@ const Schema = mongoose.Schema;
 
 const leaveSchema = new Schema({
   currDate : {
-    type: Date,
-    required: true
+    type: String,
+    required : true
   },
   startDate : {
-    type: Date,
+    type: String,
     required: true
   },
   endDate : {
-    type: Date,
+    type: String,
     required: true
+  },
+  reason : {
+    type : String,
+    required : true
   },
   status : {
     type: Number,
