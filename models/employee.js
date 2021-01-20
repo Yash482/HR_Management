@@ -63,6 +63,26 @@ employeeSchema.methods.addAllowance = function(allowance) {
   return this.save();
 };
 
+employeeSchema.methods.removeAllowance = function(allowanceId) {
+  
+  const Allowances = [...this.allowances];
+
+  let i=0;
+
+  Allowances.forEach(allowance => {
+      if(allowance._id == allowanceId){
+        return;
+      }
+      i++;
+  })
+  Allowances.splice(i, 1);
+
+ //console.log("allowance removed");
+ //console.log(Allowances)
+  this.allowances = [...Allowances];
+  return this.save();
+};
+
 employeeSchema.methods.addDeduction = function(deduction) {
   
   const updatedDeduction = [...this.deduction];
@@ -70,6 +90,26 @@ employeeSchema.methods.addDeduction = function(deduction) {
     updatedDeduction.push(deduction);
  
   this.deduction = updatedDeduction;
+  return this.save();
+};
+
+employeeSchema.methods.removeDeduction = function(deductId) {
+  
+  const Deductions = [...this.deduction];
+
+  let i=0;
+
+  Deductions.forEach(deduction => {
+      if(deduction._id == deductId){
+        return;
+      }
+      i++;
+  })
+  Deductions.splice(i, 1);
+
+    
+ 
+  this.deduction = Deductions;
   return this.save();
 };
 
