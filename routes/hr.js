@@ -40,6 +40,8 @@ router.get('/:hrId/employees/:empId',  hrController.getEmployee);
 router.put('/:hrId/employees/:empId/edit',  hrController.updateEmployeeDetails);
 router.post('/:hrId/employees/:empId/add-allowance',  hrController.addAllowance);
 router.post('/:hrId/employees/:empId/add-deduction',  hrController.addDeduction);
+router.post('/:hrId/employees/:empId/remove-allowance/:allowanceId',  hrController.removeAllowance);
+router.post('/:hrId/employees/:empId/remove-deduction/:deductId',  hrController.removeDeduction);
 
 
 router.post('/:hrId/leave-reqs/:leaveId/:status', hrController.postLeaveReqStatus);
