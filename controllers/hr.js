@@ -62,7 +62,22 @@ exports.addAllowance = async (req, res, next) => {
   try {
     const emp = await Employee.findById(req.params.empId);
     await emp.addAllowance({title : title, time: time})
-    res.status(201).json({ message: 'allowance added!'});
+    res.status(201).json({ message: 'allowance added!', allowances : emp.allowances});
+
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+}
+
+exports.removeAllowance = async (req, res, next) => {
+  const allowanceId = req.params.allowanceId;
+  try {
+    const emp = await Employee.findById(req.params.empId);
+    await emp.removeAllowance(allowanceId);
+    res.status(201).json({ message: 'allowance removed!', allowances : emp.allowances});
 
   } catch (err) {
     if (!err.statusCode) {
@@ -78,7 +93,22 @@ exports.addDeduction = async (req, res, next) => {
   try {
     const emp = await Employee.findById(req.params.empId);
     await emp.addDeduction({title : title, time: time})
-    res.status(201).json({ message: 'deduction added!'});
+    res.status(201).json({ message: 'deduction added!', deductions : emp.deduction});
+
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+}
+
+exports.removeDeduction = async (req, res, next) => {
+  const deductId = req.params.deductId;
+  try {
+    const emp = await Employee.findById(req.params.empId);
+    await emp.removeDeduction(deductId);
+    res.status(201).json({ message: 'deduction removed!', deduction : emp.deduction});
 
   } catch (err) {
     if (!err.statusCode) {
@@ -169,7 +199,7 @@ exports.getSpecificAttendance = async (req, res, next) => {
   try {
     const attendance = await Attendance.findOne({day : req.body.day, month : req.body.month, year : req.body.year, hr: req.params.hrId});
 
-    res.status(201).json({ message: 'Attendance for given day', attendance : attendance});
+    res.status(201).json({ message: 'Attendance for given day', attendance : attendance.employees});
 
   } catch (err) {
     if (!err.statusCode) {
@@ -183,9 +213,12 @@ exports.getAttendance = async (req, res, next) => {
   try {
     
     const AttendanceArr = await Attendance.find({hr : req.params.hrId, year: req.body.year, month : req.body.month});
+    //console.log(AttendanceArr);
+
     let employeeAttendance = AttendanceArr.map(empAtt => {
         let present, hour, min;
-        empAtt.employees.array.forEach(emp => {
+        empAtt.employees.forEach(emp => {
+          //console.log(emp);
             if(emp.empId == req.params.empId){
                 present = emp.present; hour= emp.hour; min = emp.min; 
             }
