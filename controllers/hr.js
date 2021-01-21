@@ -39,8 +39,6 @@ exports.postAddEmployee = async (req, res, next) => {
       team : team,
       yearsWorked : yearsWorked,
       hr : hrId
-      // allowances : allowances,
-      // deduction : deduction
     });
     console.log(employee);
     const currHr = await Hr.findById(hrId)
@@ -161,9 +159,7 @@ exports.markAbsent = async (req, res, next) => {
     const month = today.getUTCMonth()+1;
     const day = today.getUTCDate();
     const year = today.getUTCFullYear();
-    // const hour = today.getHours();
-    // const min = today.getMinutes();
-    // const sec = today.getSeconds();
+
     try {
       const Hremployees = await Employee.find({hr : req.params.hrId});
       const updatedEmployees = Hremployees.map(employee => {
@@ -237,20 +233,15 @@ exports.getAttendance = async (req, res, next) => {
 
 
 exports.getLeaveReq = async (req, res, next) => {
-//  const currentPage = req.query.page || 1;
- // const perPage = 2;
+
   try {
-    //const totalItems = await Post.find().countDocuments();
     const leaveReq = await Leave.find({status : 0, hr: req.params.hrId})
       .populate('employee')
-      //.sort({ Date: -1 })
-      // .skip((currentPage - 1) * perPage)
-      // .limit(perPage);
+      
 
     res.status(200).json({
       message: 'Fetched leave req successfully.',
       leaves: leaveReq
-    //  totalItems: totalItems
     });
   } catch (err) {
     if (!err.statusCode) {
@@ -262,21 +253,16 @@ exports.getLeaveReq = async (req, res, next) => {
 
 
 exports.getLoanReq = async (req, res, next) => {
-  //  const currentPage = req.query.page || 1;
-   // const perPage = 2;
+ 
     try {
-      //const totalItems = await Post.find().countDocuments();
       const isLoan = req.body.isLoan ? true : false;
       const loanReq = await Loan.find({status : 0, hr: req.params.hrId, isLoan : isLoan})
         .populate('employee')
-        //.sort({ createdAt: -1 })
-        // .skip((currentPage - 1) * perPage)
-        // .limit(perPage);
+      
   
       res.status(200).json({
         message: 'Fetched  req successfully.',
         loans: loanReq
-      //  totalItems: totalItems
       });
     } catch (err) {
       if (!err.statusCode) {
@@ -288,20 +274,13 @@ exports.getLoanReq = async (req, res, next) => {
   
 
 exports.getEmployees = async (req, res, next) => {
-  //  const currentPage = req.query.page || 1;
-   // const perPage = 2;
+ 
     try {
-      //const totalItems = await Post.find().countDocuments();
       const employees = await Employee.find({ hr: req.params.hrId})
-        //.populate('employee')
-        // .sort({ createdAt: -1 })
-        // .skip((currentPage - 1) * perPage)
-        // .limit(perPage);
-  
+    
       res.status(200).json({
         message: 'Fetched employees successfully.',
         employees: employees
-      //  totalItems: totalItems
       });
     } catch (err) {
       if (!err.statusCode) {
@@ -313,15 +292,8 @@ exports.getEmployees = async (req, res, next) => {
 
   
 exports.getEmployee = async (req, res, next) => {
-  //  const currentPage = req.query.page || 1;
-   // const perPage = 2;
     try {
-      //const totalItems = await Post.find().countDocuments();
       const employee = await Employee.findById(req.params.empId)
-        //.populate('employee')
-        // .sort({ createdAt: -1 })
-        // .skip((currentPage - 1) * perPage)
-        // .limit(perPage);
   
       res.status(200).json({
         message: 'Fetched employees successfully.',
@@ -378,25 +350,6 @@ exports.getEmployee = async (req, res, next) => {
     }
       
   };
-    
-  
-
-// exports.getUserStatus = async (req, res, next) => {
-//   try {
-//     const user = await User.findById(req.userId);
-//     if (!user) {
-//       const error = new Error('User not found.');
-//       error.statusCode = 404;
-//       throw error;
-//     }
-//     res.status(200).json({ status: user.status });
-//   } catch (err) {
-//     if (!err.statusCode) {
-//       err.statusCode = 500;
-//     }
-//     next(err);
-//   }
-// };
 
 exports.updateEmployeeDetails = async (req, res, next) => {
   const newSalary = req.body.salary; 
