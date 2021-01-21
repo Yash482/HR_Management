@@ -1,11 +1,9 @@
-const fs = require('fs');
 const path = require('path');
 
 const { validationResult } = require('express-validator/check');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const io = require('../socket');
 const Employee = require('../models/employee');
 const Hr = require('../models/hr');
 const Leave = require('../models/leaveReq');
@@ -82,10 +80,7 @@ exports.createLeaveReq = async (req, res, next) => {
       hr : hr
     });
     await leaveReq.save();
-    // io.getIO().emit('posts', {
-    //   action: 'create',
-    //   post: { ...post._doc, creator: { _id: req.userId, name: user.name } }
-    // });
+   
       res.status(201).json({
       message: 'Leave request created successfully!',
       status: status
@@ -107,12 +102,6 @@ exports.createLoanReq = async (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
-  // if (!req.file) {
-  //   const error = new Error('No image provided.');
-  //   error.statusCode = 422;
-  //   throw error;
-  // }
-  //const imageUrl = req.file.path;
   const today = new Date();
   const month = today.getUTCMonth()+1;
   const day = today.getUTCDate();
@@ -137,10 +126,7 @@ exports.createLoanReq = async (req, res, next) => {
       hr : hr
     });
     await loanReq.save();
-    // io.getIO().emit('posts', {
-    //   action: 'create',
-    //   post: { ...post._doc, creator: { _id: req.userId, name: user.name } }
-    // });
+    
       res.status(201).json({
       message: 'Loan request is made!',
       status: status
@@ -152,6 +138,42 @@ exports.createLoanReq = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getLeaveReq = async (req, res, next) => {
+  
+    try {
+      const leaves = await Leave.find({ employee: req.params.empId})
+  
+      res.status(200).json({
+        message: 'Fetched leave requests successfully.',
+        leaves: leaves
+      });
+    } catch (err) {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    }
+  };
+
+
+  exports.getLoanReq = async (req, res, next) => {
+     const isLoan = req.body.isLoan ? true : false;
+      try {
+        const loans = await Loan.find({ employee : req.params.empId, isLoan : isLoan})
+    
+        res.status(200).json({
+          message: 'Fetched loan reqs successfully.',
+          loans: loans
+        });
+      } catch (err) {
+        if (!err.statusCode) {
+          err.statusCode = 500;
+        }
+        next(err);
+      }
+    };
+  
 
 
 exports.markAttendance = async (req, res, next) => {
