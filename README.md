@@ -17,3 +17,8 @@ PUT Req      /hr/:hrId/employees/:empId/edit --> To update employee details like
  POST  Req    /hr/:hrId/loan-reqs/:loanId/:status --> Respond to loan request<br />
  POST  Req    /hr/:hrId/leave-reqs/:leaveId/:status --> Respond to leave request<br />
  POST  Req    /hr/:hrId/bonus-reqs/:bonusId/:status --> Respond to bonus request<br />
+ POST  Req    /hr/:hrId/open-attendance --> Open the attendance form and mark everyone absent at start.<br />
+ POST  Req    /employee/:empId/mark-attendance --> Mark your attendance<br />
+ GET  Req    /hr/:hrId/get-specific-attendance --> Get attendance of all the employees on a particular day<br />
+ GET  Req    /hr/:hrId/employees/:empId/get-attendance --> Get attendance of a particular month of any employee<br />
+
