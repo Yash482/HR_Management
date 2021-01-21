@@ -117,9 +117,10 @@ exports.removeDeduction = async (req, res, next) => {
 }
 
 exports.login = async (req, res, next) => {
+  console.log( req.body);
   const email = req.body.email;
   const password = req.body.password;
-  console.log(email);
+  // console.log(email);
   let loadedHr;
   try {
     const hr = await Hr.findOne({ email: email });

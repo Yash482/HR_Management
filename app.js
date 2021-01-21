@@ -22,8 +22,8 @@ const app = express();
 app.use(bodyParser.json()); // application/json
 
 // const hr = new Hr({
-//   name : "Ayushi Singh",
-//   email: "ayushinasha@gmail.com",
+//   name : "Atul Pandey",
+//   email: "apandey0826@gmail.com",
 //   password: "12345678"
 // })
 
