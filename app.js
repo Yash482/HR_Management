@@ -26,8 +26,8 @@ app.use(bodyParser.json()); // application/json
 //app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // const hr = new Hr({
-//   name : "Ayushi Singh",
-//   email: "ayushinasha@gmail.com",
+//   name : "Atul Pandey",
+//   email: "apandey0826@gmail.com",
 //   password: "12345678"
 // })
 
