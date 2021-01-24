@@ -1,5 +1,6 @@
 const path = require('path');
-
+//j6Nw9JmNhefMlgMh
+//mongodb+srv://ayushi:<password>@cluster0.pffz0.mongodb.net/<dbname>?retryWrites=true&w=majority
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -10,24 +11,19 @@ const hrRoutes = require('./routes/hr');
 const { request } = require('http');
 const Hr = require('./models/hr');
 
+mongoose.connect("mongodb+srv://ayushi:j6Nw9JmNhefMlgMh@cluster0.pffz0.mongodb.net/hr_db?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
 
-
-mongoose.connect("mongodb://localhost/hr-db", {useNewUrlParser: true, useUnifiedTopology: true});
-
-
+mongoose.connection.on('connected',()=>{
+  console.log("connected to mongodb")
+})
+mongoose.connection.on('error',(err)=>{
+  console.log("error connecting")
+})
 const app = express();
-
 
 // app.use(bodyParser.urlencoded()); // x-www-form-urlencoded <form>
 app.use(bodyParser.json()); // application/json
 
-// const hr = new Hr({
-//   name : "Atul Pandey",
-//   email: "apandey0826@gmail.com",
-//   password: "12345678"
-// })
-
-//  hr.save();
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');

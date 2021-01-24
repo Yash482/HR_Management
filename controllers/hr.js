@@ -57,9 +57,10 @@ exports.postAddEmployee = async (req, res, next) => {
 exports.addAllowance = async (req, res, next) => {
   const title = req.body.title;
   const time = req.body.time;
+  const amount= req.body.amount;
   try {
     const emp = await Employee.findById(req.params.empId);
-    await emp.addAllowance({title : title, time: time})
+    await emp.addAllowance({title : title,time: time,amount:amount})
     res.status(201).json({ message: 'allowance added!', allowances : emp.allowances});
 
   } catch (err) {
@@ -88,9 +89,10 @@ exports.removeAllowance = async (req, res, next) => {
 exports.addDeduction = async (req, res, next) => {
   const title = req.body.title;
   const time = req.body.time;
+  const amount= req.body.amount;
   try {
     const emp = await Employee.findById(req.params.empId);
-    await emp.addDeduction({title : title, time: time})
+    await emp.addDeduction({title : title, time: time,amount:amount})
     res.status(201).json({ message: 'deduction added!', deductions : emp.deduction});
 
   } catch (err) {
@@ -193,8 +195,9 @@ exports.markAbsent = async (req, res, next) => {
 }
 
 exports.getSpecificAttendance = async (req, res, next) => {
+  console.log(req.body)
   try {
-    const attendance = await Attendance.findOne({day : req.body.day, month : req.body.month, year : req.body.year, hr: req.params.hrId});
+    const attendance = await Attendance.findOne({day : req.params.day, month : req.params.month, year : req.params.year, hr: req.params.hrId});
 
     res.status(201).json({ message: 'Attendance for given day', attendance : attendance.employees});
 
@@ -223,7 +226,7 @@ exports.getAttendance = async (req, res, next) => {
         return {day : empAtt.day, present : present, hour: hour, min : min}
     })
     
-    res.status(201).json({ message: 'Attendance for given month', attendance : employeeAttendance});
+    res.status(201).json({message:"month employee",attendance : employeeAttendance});
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
