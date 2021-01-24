@@ -1,7 +1,7 @@
 const path = require('path');
+const bcrypt = require('bcryptjs');
 
 const { validationResult } = require('express-validator/check');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const Employee = require('../models/employee');
@@ -173,6 +173,69 @@ exports.getLeaveReq = async (req, res, next) => {
         next(err);
       }
     };
+
+
+  exports.postAddSecureQ = async (req, res, next) => {
+    try {
+
+      const employee = await Employee.findById(req.params.empId);
+      employee.securityQuestion = req.body.question;
+      const hashedAns = await bcrypt.hash(req.body.answer, 12);
+      employee.securityAnswer = hashedAns;
+      await employee.save();
+      res.status(201).json({
+        message: 'Question added successfully!', status: "1"
+      });
+
+    } catch (err) {
+        if (!err.statusCode) {
+          err.statusCode = 500;
+        }
+        next(err);
+      }
+  };
+
+  exports.postCheckSecureQ = async (req, res, next) => {
+    try {
+
+      const employee = await Employee.findById(req.body.empId);
+      const isEqual = await bcrypt.compare(req.body.answer, employee.securityAnswer);
+    if (!isEqual) {
+      const error = new Error('Wrong answer!');
+      error.statusCode = 401;
+      throw error;
+    }
+    
+    res.status(200).json({ message : "Correct answer" , status : "1"});
+    } catch (err) {
+        if (!err.statusCode) {
+          err.statusCode = 500;
+        }
+        next(err);
+      }
+  };
+
+  
+exports.postNewPassword = async (req, res,next) => {
+  const newPassword = req.body.newPassword;
+  const empId = req.body.empId;
+  try{
+   const employee = await Employee.findById(empId);
+    
+    const newHashedPw = await bcrypt.hash(newPassword, 12);
+      employee.password = newHashedPw;
+      await employee.save();
+      res.status(201).json({
+        message: 'Password changed successfully!', status: "1"
+      });
+  }catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+}
+
   
 
 
