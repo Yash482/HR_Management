@@ -23,17 +23,7 @@ const app = express();
 
 // app.use(bodyParser.urlencoded()); // x-www-form-urlencoded <form>
 app.use(bodyParser.json()); // application/json
-// app.use(
-//   multer({ storage: fileStorage, fileFilter: fileFilter }).single('image')
-// );
-//app.use('/images', express.static(path.join(__dirname, 'images')));
 
-//const hr = new Hr({
-   //name : "Ayushi Singh",
-   //email: "ayushinasha@gmail.com",
-  //password: "12345678"
- //})
-//hr.save();
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -56,18 +46,6 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message: message, data: data });
 });
 
-// mongoose
-//   .connect(
-//     'mongodb+srv://maximilian:9u4biljMQc4jjqbe@cluster0-ntrwp.mongodb.net/messages?retryWrites=true'
-//   )
-//   .then(result => {
-//     const server = app.listen(8080);
-//     const io = require('./socket').init(server);
-//     io.on('connection', socket => {
-//       console.log('Client connected');
-//     });
-//   })
-//   .catch(err => console.log(err));
 
 app.listen(5000, ()=> {
   console.log("server started")

@@ -21,4 +21,7 @@ PUT Req      /hr/:hrId/employees/:empId/edit --> To update employee details like
  POST  Req    /employee/:empId/mark-attendance --> Mark your attendance<br />
  GET  Req    /hr/:hrId/get-specific-attendance --> Get attendance of all the employees on a particular day<br />
  GET  Req    /hr/:hrId/employees/:empId/get-attendance --> Get attendance of a particular month of any employee<br />
+ GET  Req    /employee/:empId/leave-reqs --> Get leave requests<br />
+ GET  Req    /employee/:empId/loan-reqs --> Get loan requests<br />
+ GET  Req    /employee/:empId/bonus-reqs --> Get bonus requests<br />
 

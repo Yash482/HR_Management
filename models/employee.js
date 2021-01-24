@@ -31,6 +31,12 @@ const employeeSchema = new Schema(
       type: String,
       required: true
     },
+    securutyQuestion: {
+      type: String
+    },
+    securityAnswer: {
+      type: String
+    },
     allowances : [
       {
         title : String,
