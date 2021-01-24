@@ -267,7 +267,7 @@ exports.getLoanReq = async (req, res, next) => {
    // const perPage = 2;
     try {
       //const totalItems = await Post.find().countDocuments();
-      const isLoan = req.body.isLoan ? true : false;
+      const isLoan = req.params.loan ==='1'? true : false;
       const loanReq = await Loan.find({status : 0, hr: req.params.hrId, isLoan : isLoan})
         .populate('employee')
         //.sort({ createdAt: -1 })
@@ -421,5 +421,36 @@ exports.updateEmployeeDetails = async (req, res, next) => {
     }
     next(err);
   }
-};
+}
+
+exports.searchAll = async ( req ,res,next) =>{
+    
+  const data = req.body.data;
+  console.log( data);
+
+  try {
+    //const totalItems = await Post.find().countDocuments();
+  const employees = await Employee.find( data ) 
+      //.populate('employee')
+      // .sort({ createdAt: -1 })
+      // .skip((currentPage - 1) * perPage)
+      // .limit(perPage);
+
+    res.status(200).json({
+      message: 'Fetched employees successfully.',
+      employees: employees
+    //  totalItems: totalItems
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+
+
+}
+
+
+
 

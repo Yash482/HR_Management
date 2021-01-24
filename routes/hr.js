@@ -32,8 +32,9 @@ router.post(
 router.post('/login', hrController.login);
 
 router.get('/:hrId/leave-reqs',  hrController.getLeaveReq);
-router.get('/:hrId/loan-reqs',  hrController.getLoanReq);
-router.get('/:hrId/bonus-reqs',  hrController.getLoanReq);
+router.post('/:hrId/search',  hrController.searchAll);
+router.get('/:hrId/loan-reqs/:loan',  hrController.getLoanReq);
+router.get('/:hrId/bonus-reqs/:loan',  hrController.getLoanReq);
 
 router.get('/:hrId/employees',  hrController.getEmployees);
 router.get('/:hrId/employees/:empId',  hrController.getEmployee);
