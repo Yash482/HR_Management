@@ -1,12 +1,11 @@
 const express = require('express');
 const { body } = require('express-validator/check');
-
 const Employee = require('../models/employee');
 const hrController = require('../controllers/hr');
 const isAuth = require('../middleware/is-auth');
-
 const router = express.Router();
-
+const mongoose=require('mongoose')
+const HrManager=mongoose.model("HrManager")
 router.post(
   '/:hrId/add-employee',
   [
@@ -28,9 +27,16 @@ router.post(
   ],
   hrController.postAddEmployee
 );
-
+router.post('/addhr',(req,res)=>{
+const {name,email,password}=req.body;
+console.log(name)
+/*const HrManager=new HrManager({name,email,password})
+HrManager.save()
+.then((user)=>{res.json({message:"hr added"})})
+.catch(err=>{console.log(err)})*/
+res.send("success")
+})
 router.post('/login', hrController.login);
-
 router.get('/:hrId/leave-reqs',  hrController.getLeaveReq);
 router.get('/:hrId/loan-reqs',  hrController.getLoanReq);
 router.get('/:hrId/bonus-reqs',  hrController.getLoanReq);
@@ -50,7 +56,7 @@ router.post('/:hrId/bonus-reqs/:bonusId/:status',  hrController.postLoanReqStatu
 
 router.post('/:hrId/open-attendance',  hrController.markAbsent);
 router.get('/:hrId/employees/:empId/get-attendance',  hrController.getAttendance);
-router.get('/:hrId/get-specific-attendance',  hrController.getSpecificAttendance);
+router.get('/:hrId/get-specific-attendance/:day/:month/:year',  hrController.getSpecificAttendance);
 
 // router.get('/status', isAuth, hrController.getUserStatus);
 

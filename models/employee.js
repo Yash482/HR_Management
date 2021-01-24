@@ -34,13 +34,15 @@ const employeeSchema = new Schema(
     allowances : [
       {
         title : String,
-        time : String
+        time : String,
+        amount : String
       }
     ],
     deduction : [
       {
         title : String,
-        time : String
+        time : String,
+        amount:String
       }
     ],
     hr: {
