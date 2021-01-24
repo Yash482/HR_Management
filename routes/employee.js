@@ -17,6 +17,10 @@ router.get('/:empId/leave-reqs', employeeController.getLeaveReq);
 router.get('/:empId/loan-reqs', employeeController.getLoanReq);
 router.get('/:empId/bonus-reqs', employeeController.getLoanReq);
 
+router.post('/:empId/add-security-question', employeeController.postAddSecureQ);
+router.post('/check-secure-answer', employeeController.postCheckSecureQ);
+router.post('/update-password', employeeController.postNewPassword);
+
 
 router.post('/:empId/mark-attendance', employeeController.markAttendance);
 
